@@ -4,12 +4,22 @@ using UnityEngine;
 
 public class BlockSpawner : MonoBehaviour
 {
-    public GameObject blockPrefab; // Prefab del bloque que se va a instanciar
-    public Transform spawnHeight;  // La altura donde se instanciará el bloque
-    private GameObject currentBlock; // El bloque actual que está en el aire
+    public GameObject blockPrefab;
+    public Transform spawnHeight;
+    private GameObject currentBlock;
 
-    private bool isInAir = true; // Detectar si el bloque está en el aire
-    private bool hasTouchedBase = false; // Detectar si el bloque tocó la base
+    private bool isInAir = true;
+    private bool hasTouchedBase = false;
+
+    private void OnEnable()
+    {
+        InputController.OnTap += SpawnBlock;
+    }
+
+    private void OnDisable()
+    {
+        InputController.OnTap -= SpawnBlock;
+    }
 
     private void Start()
     {
@@ -20,13 +30,11 @@ public class BlockSpawner : MonoBehaviour
     {
         if (currentBlock != null)
         {
-            // Detectar si el bloque está en el aire
             if (isInAir && currentBlock.transform.position.y < spawnHeight.position.y)
             {
                 isInAir = false;
             }
 
-            // Detectar si el bloque ha tocado el bloque base
             if (!hasTouchedBase && !isInAir && currentBlock.GetComponent<Collider>().bounds.min.y <= 0)
             {
                 hasTouchedBase = true;
@@ -35,7 +43,6 @@ public class BlockSpawner : MonoBehaviour
         }
     }
 
-    // Método para instanciar un nuevo bloque
     public void SpawnBlock()
     {
         currentBlock = Instantiate(blockPrefab, spawnHeight.position, Quaternion.identity);
@@ -43,13 +50,11 @@ public class BlockSpawner : MonoBehaviour
         hasTouchedBase = false;
     }
 
-    // Método para verificar si el bloque está en el aire
     public bool IsInAir()
     {
         return isInAir;
     }
 
-    // Método para verificar si el bloque tocó la base
     public bool HasTouchedBase()
     {
         return hasTouchedBase;
